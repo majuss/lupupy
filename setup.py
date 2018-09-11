@@ -24,7 +24,8 @@ setup(
     python_requires='>=3',
     install_requires=[
         'requests>=2.12.4',
-        'demjson'
+        'demjson',
+        'colorlog'
     ],
     test_suite='tests',
     entry_points={

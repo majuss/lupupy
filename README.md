@@ -2,7 +2,7 @@
 
 A python3 library to communicate with the Lupus Electronics alarm control panel.
 
-# Disclaimer:
+## Disclaimer:
 
 Published under the MIT license - See LICENSE file for more details.
 
@@ -10,14 +10,14 @@ Published under the MIT license - See LICENSE file for more details.
 
 This library is based on the work of MisterWil See: https://github.com/MisterWil/abodepy. By "based" I mean that I copied huge portions of code and customized it to work with Lupusec.
 
-# Installation
+## Installation
 
 You can install the library with pip:
 ```
 pip install Lupupy
 ```
 
-# Usage
+## Usage
 
 You can integrate the library into your own project, or simply use it in the command line.
 ```
@@ -25,11 +25,14 @@ lupupy -u USERNAME -p PASSWORD -i IP_ADDRESS --devices
 ```
 This will retrieve a simple list of all devices.
 
-# Shortcomings
+---
+
+### Shortcomings
 
 The library currently only works with the XT1 alarm panel. The json responses of other panel will differ and most likely not work. Most of the advanced devices are not yet supported, I don't have the hardware to reverse engineer these devices. If someone need a further integration please open an issue and we will find a way.
 
-# Currently supported features:
-- Status of binary sensors like door and windows sensors
+### Currently supported features:
+- Status of binary sensors like door and window sensors
 - Setting the mode of the alarm control panel
 - Get the history for further parsing
+- Status of power switches

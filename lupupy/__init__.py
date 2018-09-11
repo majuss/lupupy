@@ -21,6 +21,8 @@ class Lupusec():
         self.session = requests.Session()
         self.session.auth = (username, password)
         self.api_url = "http://{}/action/".format(ip_address)
+        self._apipost('login')
+
         self._mode = None
         self._devices = None
         self._panel = self.getPanel()
@@ -93,6 +95,9 @@ class Lupusec():
 
     def getPanel(self): #we are trimming the json from Lupusec heavily, since its bullcrap
         response = self._apiget('panelCondGet')
+        if response.status_code != 200:
+            print(response.text)
+            raise Exception('Unable to get panel')
         panel = self.cleanJson(response.text)['updates']
         panel['mode'] = panel['mode_st']
         panel.pop('mode_st')

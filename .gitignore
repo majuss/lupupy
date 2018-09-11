@@ -7,6 +7,10 @@
 *.o
 *.so
 *.pyc
+venv
+__pycache__
+test_*
+*.egg.info
 
 # Packages #
 ############
