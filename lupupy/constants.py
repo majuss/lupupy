@@ -1,0 +1,47 @@
+#Used in setup.py
+VERSION = '0.0.1'
+PROJECT_PACKAGE_NAME = 'lupupy'
+PROJECT_LICENSE = 'MIT'
+PROJECT_URL = 'github.com/majuss/lupupy'
+PROJECT_DESCRIPTION = 'A python cli for Lupusec alarm panels.'
+PROJECT_LONG_DESCRIPTION = ('lupupy is a python3 interface for'
+                            'the Lupus Electronics alarm panel.'
+                            'Its intented to get used in various'
+                            'smart home services to get a full'
+                            'integration of all you devices.')
+PROJECT_AUTHOR = 'Majuss'
+
+MODE_AWAY = 'Arm'
+MODE_HOME = 'Home'
+MODE_DISARMED = 'Disarm'
+ALL_MODES = [MODE_DISARMED, MODE_HOME, MODE_AWAY]
+MODE_TRANSLATION = {'Disarm' : 2, 'Home' : 1, 'Arm' : 0}
+
+STATE_ALARM_DISARMED = 'disarmed'
+STATE_ALARM_ARMED_HOME = 'armed_home'
+STATE_ALARM_ARMED_AWAY = 'armed_away'
+MODE_TRANSLATION_GENERIC = {'Disarm' : 'disarmed', 'Home' : 'armed_home', 'Arm' : 'armed_away'}
+DEFAULT_MODE = MODE_AWAY
+
+STATUS_ON_INT = 0
+STATUS_ON = 'on'
+STATUS_OFF_INT = 1
+STATUS_OFF = 'off'
+STATUS_OFFLINE = 'offline'
+STATUS_CLOSED = 'Geschlossen'
+STATUS_CLOSED_INT = 0
+STATUS_OPEN = 'Offen'
+STATUS_OPEN_INT = 1
+
+ALARM_NAME = 'Lupusec Alarm'
+ALARM_DEVICE_ID = '0'
+ALARM_TYPE = 'Alarm'
+
+# GENERIC Lupusec DEVICE TYPES
+TYPE_WINDOW = "Fensterkontakt"
+TYPE_DOOR = "Türkontakt"
+TYPE_POWER_SWITCH = 'power_switch'
+ALL_SWITCHES = [TYPE_POWER_SWITCH]
+TYPE_OPENING = [TYPE_DOOR, TYPE_WINDOW]
+BINARY_SENSOR_TYPES = TYPE_OPENING
+TYPE_SENSOR = ['Rauchmelder', 'Wassermelder']
