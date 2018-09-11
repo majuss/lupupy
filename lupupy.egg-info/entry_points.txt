@@ -1,3 +1,0 @@
-[console_scripts]
-lupupy = lupupy.__main__:main
-
