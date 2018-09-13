@@ -21,28 +21,28 @@ class Lupusec():
         self.session = requests.Session()
         self.session.auth = (username, password)
         self.api_url = "http://{}/action/".format(ip_address)
-        self._apipost('login')
+        self._request_post('login')
 
         self._mode = None
         self._devices = None
-        self._panel = self.getPanel()
-        self._cache_sensors = None
-        self._cache_stamp_s = None
-        self._cache_pss = None
-        self._cache_stamp_p = None
+        self._panel = self.get_panel()
+        self._cacheSensors = None
+        self._cacheStampS = None
+        self._cachePss = None
+        self._cacheStampP = None
 
         if get_devices or self._devices == None:
             self.get_devices()
 
-    def _apiget(self, action):
+    def _request_get(self, action):
         response = self.session.get(self.api_url + action, timeout=15)
         _LOGGER.debug('Action and statuscode of apiGET command: %s, %s', action, response.status_code)
         return response
 
-    def _apipost(self, action, params={}):
+    def _request_post(self, action, params={}):
         return self.session.post(self.api_url + action, data=params)
 
-    def cleanJson(self, textdata):
+    def clean_json(self, textdata):
         _LOGGER.debug('Input for clean json' + textdata)
         textdata = textdata.replace("\t", "")
         i = textdata.index('\n')
@@ -50,36 +50,36 @@ class Lupusec():
         textdata = demjson.decode(textdata)
         return textdata
     
-    def getPowerswitches(self):
-        stamp_now = time.time()
+    def get_power_switches(self):
+        stampNow = time.time()
         length = len(self._devices)
-        if self._cache_pss is None or stamp_now - self._cache_stamp_p > 2.0:
-            self._cache_stamp_p = stamp_now
-            response = self._apiget('pssStatusGet')
-            response = self.cleanJson(response.text)['forms']
-            power_switches = []
+        if self._cachePss is None or stampNow - self._cacheStampP > 2.0:
+            self._cacheStamp_p = stampNow
+            response = self._request_get('pssStatusGet')
+            response = self.clean_json(response.text)['forms']
+            powerSwitches = []
             counter = 1
             for pss in response:
-                power_switch = {}
+                powerSwitch = {}
                 if response[pss]['ready'] == 1:
-                    power_switch['status'] = response[pss]['pssonoff']
-                    power_switch['device_id'] = counter + length
-                    power_switch['type'] = CONST.TYPE_POWER_SWITCH
-                    power_switch['name'] = response[pss]['name']
-                    power_switches.append(power_switch)
+                    powerSwitch['status'] = response[pss]['pssonoff']
+                    powerSwitch['device_id'] = counter + length
+                    powerSwitch['type'] = CONST.TYPE_POWER_SWITCH
+                    powerSwitch['name'] = response[pss]['name']
+                    powerSwitches.append(powerSwitch)
                 else:
                     _LOGGER.debug('Pss skipped, not active')
                 counter += 1
-            self._cache_pss = power_switches
+            self._cachePss = powerSwitches
         
-        return self._cache_pss
+        return self._cachePss
     
-    def getSensors(self):
+    def get_sensors(self):
         stamp_now = time.time()
-        if self._cache_sensors is None or stamp_now - self._cache_stamp_s > 2.0:
-            self._cache_stamp_s = stamp_now
-            response = self._apiget('sensorListGet')
-            response = self.cleanJson(response.text)['senrows']
+        if self._cacheSensors is None or stamp_now - self._cacheStampS > 2.0:
+            self._cacheStampS = stamp_now
+            response = self._request_get('sensorListGet')
+            response = self.clean_json(response.text)['senrows']
             sensors = []
             for device in response:
                 device['status'] = device['cond']
@@ -89,16 +89,16 @@ class Lupusec():
                 if not device['status']:
                     device['status'] == 'Geschlossen'
                 sensors.append(device)
-            self._cache_sensors = sensors
+            self._cacheSensors = sensors
             
-        return self._cache_sensors
+        return self._cacheSensors
 
-    def getPanel(self): #we are trimming the json from Lupusec heavily, since its bullcrap
-        response = self._apiget('panelCondGet')
+    def get_panel(self): #we are trimming the json from Lupusec heavily, since its bullcrap
+        response = self._request_get('panelCondGet')
         if response.status_code != 200:
             print(response.text)
             raise Exception('Unable to get panel')
-        panel = self.cleanJson(response.text)['updates']
+        panel = self.clean_json(response.text)['updates']
         panel['mode'] = panel['mode_st']
         panel.pop('mode_st')
         panel['device_id'] = CONST.ALARM_DEVICE_ID
@@ -107,9 +107,9 @@ class Lupusec():
 
         return panel
 
-    def getHistory(self):
-        response = self._apiget('historyGet')
-        return self.cleanJson(response.text)
+    def get_history(self):
+        response = self._request_get('historyGet')
+        return self.clean_json(response.text)
 
     def refresh(self):
         """Do a full refresh of all devices and automations."""
@@ -122,20 +122,20 @@ class Lupusec():
             if self._devices is None:
                 self._devices = {}
 
-            response_object = self.getSensors()
-            if (response_object and
-                    not isinstance(response_object, (tuple, list))):
-                response_object = response_object
+            responseObject = self.get_sensors()
+            if (responseObject and
+                    not isinstance(responseObject, (tuple, list))):
+                responseObject = responseObject
 
-            for device_json in response_object:
+            for deviceJson in responseObject:
                 # Attempt to reuse an existing device
-                device = self._devices.get(device_json['name'])
+                device = self._devices.get(deviceJson['name'])
 
                 # No existing device, create a new one
                 if device:
-                    device.update(device_json)
+                    device.update(deviceJson)
                 else:
-                    device = new_device(device_json, self)
+                    device = newDevice(deviceJson, self)
 
                     if not device:
                         _LOGGER.info('Device is unknown')
@@ -144,32 +144,32 @@ class Lupusec():
                     self._devices[device.device_id] = device
 
             # We will be treating the Lupusec panel itself as an armable device.
-            panel_json = self.getPanel()
-            _LOGGER.debug("Get the panel in getDevices: %s", panel_json)
+            panelJson = self.get_panel()
+            _LOGGER.debug("Get the panel in get_devices: %s", panelJson)
 
-            self._panel.update(panel_json)
+            self._panel.update(panelJson)
 
-            alarm_device = self._devices.get('0')
+            alarmDevice = self._devices.get('0')
 
-            if alarm_device:
-                alarm_device.update(panel_json)
+            if alarmDevice:
+                alarmDevice.update(panelJson)
             else:
-                alarm_device = ALARM.create_alarm(panel_json, self)
-                self._devices['0'] = alarm_device
+                alarmDevice = ALARM.create_alarm(panelJson, self)
+                self._devices['0'] = alarmDevice
 
             #Now we will handle the power switches
-            switches = self.getPowerswitches()
-            _LOGGER.debug('Get active the power switches in getDevices: %s', switches)
+            switches = self.get_power_switches()
+            _LOGGER.debug('Get active the power switches in get_devices: %s', switches)
 
-            for device_json in switches:
+            for deviceJson in switches:
                 # Attempt to reuse an existing device
-                device = self._devices.get(device_json['name'])
+                device = self._devices.get(deviceJson['name'])
 
                 # No existing device, create a new one
                 if device:
-                    device.update(device_json)
+                    device.update(deviceJson)
                 else:
-                    device = new_device(device_json, self)
+                    device = newDevice(deviceJson, self)
                     if not device:
                         _LOGGER.info('Device is unknown')
                         continue
@@ -206,29 +206,29 @@ class Lupusec():
 
         return self.get_device(CONST.ALARM_DEVICE_ID, refresh)
     
-    def setMode(self, mode):
-        r = self._apipost(
+    def set_mode(self, mode):
+        r = self._request_post(
             "panelCondPost",
             {
                 'mode': mode,
             }
         )
-        response_json = self.cleanJson(r.text)
-        return response_json
+        responseJson = self.clean_json(r.text)
+        return responseJson
 
-def new_device(device_json, lupusec):
+def newDevice(deviceJson, lupusec):
     """Create new device object for the given type."""
-    type_tag = device_json.get('type')
+    type_tag = deviceJson.get('type')
 
     if not type_tag:
         _LOGGER.info('Device has no type')
 
     if type_tag in CONST.TYPE_OPENING:
-        return LupusecBinarySensor(device_json, lupusec)
+        return LupusecBinarySensor(deviceJson, lupusec)
     elif type_tag in CONST.TYPE_SENSOR:
-        return LupusecBinarySensor(device_json, lupusec)
-    elif type_tag in CONST.ALL_SWITCHES:
-        return LupusecSwitch(device_json, lupusec)
+        return LupusecBinarySensor(deviceJson, lupusec)
+    elif type_tag in CONST.TYPE_SWITCH:
+        return LupusecSwitch(deviceJson, lupusec)
     else:
         _LOGGER.info('Device is not known')
     return None

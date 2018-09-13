@@ -30,19 +30,19 @@ class LupusecDevice(object):
         # new_device = {}
 
         if self.type in CONST.BINARY_SENSOR_TYPES:
-            response = self._lupusec.getSensors()
+            response = self._lupusec.get_sensors()
             for device in response:
                 if device['device_id'] == self._device_id:
                     self.update(device)
             return device
 
         elif self.type == CONST.ALARM_TYPE:
-            response = self._lupusec.getPanel()
+            response = self._lupusec.get_panel()
             self.update(response)
             return response
         
         elif self.type == CONST.TYPE_POWER_SWITCH:
-            response = self._lupusec.getPowerswitches()
+            response = self._lupusec.get_power_switches()
             for pss in response:
                 if pss['device_id'] == self._device_id:
                     self.update(pss)
@@ -50,7 +50,7 @@ class LupusecDevice(object):
 
     def set_status(self, status):
         """Set status of power switch."""
-        
+        # self._apipost
 
     def update(self, json_state):
         """Update the json data from a dictionary.

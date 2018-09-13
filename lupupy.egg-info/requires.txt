@@ -1,0 +1,3 @@
+requests>=2.12.4
+demjson
+colorlog

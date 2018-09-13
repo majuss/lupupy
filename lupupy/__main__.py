@@ -1,6 +1,7 @@
 import lupupy
 import argparse
 import logging
+import json
 
 _LOGGER = logging.getLogger('lupuseccl')
 
@@ -114,14 +115,14 @@ def call():
     if not args.username or not args.password or not args.ip_address:
             raise Exception("Please supply a username, password and ip.")
 
-    def _device_print(dev, append=''):
+    def _devicePrint(dev, append=''):
         _LOGGER.info("%s%s", dev.desc, append)
 
     try:
         if args.username and args.password and args.ip_address:
-            lupusec = lupupy.Lupusec( ip_address=args.ip_address,
-                                    username=args.username,
-                                    password=args.password)
+            lupusec = lupupy.Lupusec(ip_address=args.ip_address,
+                                     username=args.username,
+                                     password=args.password)
         
         if args.arm:
             if lupusec.get_alarm().set_away():
@@ -142,14 +143,14 @@ def call():
                 _LOGGER.warning('Failed to change alarm mode to home')
             
         if args.history:
-            _LOGGER.info(lupusec.getHistory()['hisrows'])
+            _LOGGER.info(json.dumps(lupusec.get_history()['hisrows'], indent=4, sort_keys=True))
 
         if args.status:
-            _LOGGER.info('Mode of panel: %s', lupusec.get_alarm().mode())
+            _LOGGER.info('Mode of panel: %s', lupusec.get_alarm().mode)
         
         if args.devices:
             for device in lupusec.get_devices():
-                _device_print(device)
+                _devicePrint(device)
 
     finally:
         _LOGGER.info('--Finished running--')
