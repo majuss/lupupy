@@ -27,9 +27,9 @@ class Lupusec():
         self._devices = None
         self._panel = self.get_panel()
         self._cacheSensors = None
-        self._cacheStampS = None
+        self._cacheStampS = time.time()
         self._cachePss = None
-        self._cacheStampP = None
+        self._cacheStampP = time.time()
 
         if get_devices or self._devices == None:
             self.get_devices()

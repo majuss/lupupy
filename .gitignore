@@ -10,7 +10,7 @@
 venv
 __pycache__
 test_*
-*.egg.info/
+*.egg-info/
 *.vscode/
 
 # Packages #

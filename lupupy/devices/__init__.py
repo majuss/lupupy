@@ -28,12 +28,12 @@ class LupusecDevice(object):
     def refresh(self):
         """Refresh a device"""
         # new_device = {}
-
         if self.type in CONST.BINARY_SENSOR_TYPES:
             response = self._lupusec.get_sensors()
             for device in response:
                 if device['device_id'] == self._device_id:
                     self.update(device)
+
             return device
 
         elif self.type == CONST.ALARM_TYPE:
@@ -57,8 +57,11 @@ class LupusecDevice(object):
 
         Only updates if it already exists in the device.
         """
-        self._json_state.update(
-            {k: json_state[k] for k in json_state if self._json_state.get(k)})
+        if self._type in CONST.BINARY_SENSOR_TYPES:
+            self._json_state['status'] = json_state['status']
+        else:
+            self._json_state.update(
+                {k: json_state[k] for k in json_state if self._json_state.get(k)})
 
     @property
     def status(self):

@@ -1,8 +1,9 @@
 #Used in setup.py
+# -*- coding: utf-8 -*-
 VERSION = '0.0.1'
 PROJECT_PACKAGE_NAME = 'lupupy'
 PROJECT_LICENSE = 'MIT'
-PROJECT_URL = 'github.com/majuss/lupupy'
+PROJECT_URL = 'http://www.github.com/majuss/lupupy'
 PROJECT_DESCRIPTION = 'A python cli for Lupusec alarm panels.'
 PROJECT_LONG_DESCRIPTION = ('lupupy is a python3 interface for'
                             'the Lupus Electronics alarm panel.'
