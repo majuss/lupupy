@@ -12,6 +12,8 @@ __pycache__
 test_*
 *.egg-info/
 *.vscode/
+build/
+dist/
 
 # Packages #
 ############

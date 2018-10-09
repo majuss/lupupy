@@ -1,3 +1,0 @@
-colorlog
-demjson
-requests>=2.12.4
