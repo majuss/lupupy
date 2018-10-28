@@ -3,6 +3,8 @@ import argparse
 import logging
 import json
 
+from lupupy.exceptions import LupusecException
+
 _LOGGER = logging.getLogger('lupuseccl')
 
 def setup_logging(log_level=logging.INFO):
@@ -151,7 +153,9 @@ def call():
         if args.devices:
             for device in lupusec.get_devices():
                 _devicePrint(device)
-
+                
+    except lupupy.LupusecException as exc:
+        _LOGGER.error(exc)
     finally:
         _LOGGER.info('--Finished running--')
 

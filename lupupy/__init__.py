@@ -8,6 +8,8 @@ import lupupy.devices.alarm as ALARM
 import lupupy.constants as CONST
 from lupupy.devices.binary_sensor import LupusecBinarySensor
 from lupupy.devices.switch import LupusecSwitch
+from lupupy.exceptions import LupusecException
+
 
 _LOGGER = logging.getLogger(__name__)
 
