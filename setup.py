@@ -21,7 +21,7 @@ setup(
     packages=PACKAGES,
     keywords='smart home automation',
     include_package_data=True,
-    python_requires='>=3',
+    python_requires='>=3.5',
     install_requires=[
         'requests>=2.12.4',
         'demjson',
