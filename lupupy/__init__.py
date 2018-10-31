@@ -87,7 +87,7 @@ class Lupusec():
                 device['status'] = device['cond']
                 device['device_id'] = device['no']
                 if device['type'] in CONST.TYPE_TRANSLATION:
-                    device['generic_type'] = CONST.TYPE_TRANSLATION[device['type']]
+                    device.generic_type = CONST.TYPE_TRANSLATION[device['type']]
                 else:
                     device['generic_type'] = 'type_unknown'
                 device.pop('cond')
