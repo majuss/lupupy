@@ -13,7 +13,12 @@ class LupusecDevice(object):
         self._device_id = json_obj.get('device_id')
         self._name = json_obj.get('name')
         self._type = json_obj.get('type')
-        self._generic_type = CONST.TYPE_TRANSLATION[json_obj.get('type')]
+
+        if self._type in CONST.TYPE_TRANSLATION:
+            self._generic_type = CONST.TYPE_TRANSLATION[self._type]
+        else:
+            self._generic_type = 'generic_type_unknown'
+
         self._status = json_obj.get('status')
         self._lupusec = lupusec
 
