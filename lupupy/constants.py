@@ -46,3 +46,4 @@ TYPE_SWITCH = [TYPE_POWER_SWITCH]
 TYPE_OPENING = [TYPE_DOOR, TYPE_WINDOW]
 BINARY_SENSOR_TYPES = TYPE_OPENING
 TYPE_SENSOR = ['Rauchmelder', 'Wassermelder']
+TYPE_TRANSLATION = {'Fensterkontakt' : 'window', 'Türkontakt' : 'door'}
