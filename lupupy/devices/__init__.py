@@ -13,6 +13,7 @@ class LupusecDevice(object):
         self._device_id = json_obj.get('device_id')
         self._name = json_obj.get('name')
         self._type = json_obj.get('type')
+        self._generic_type = CONST.TYPE_TRANSLATION[json_obj.get('type')]
         self._status = json_obj.get('status')
         self._lupusec = lupusec
 
