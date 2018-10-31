@@ -111,6 +111,11 @@ class LupusecDevice(object):
         return self._type
 
     @property
+    def generic_type(self):
+        """Get the generic type of this device."""
+        return self._generic_type
+
+    @property
     def device_id(self):
         """Get the device id."""
         return self._device_id
