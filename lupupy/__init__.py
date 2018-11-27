@@ -90,6 +90,8 @@ class Lupusec():
                 device.pop('no')
                 if not device['status']:
                     device['status'] = 'Geschlossen'
+                else:
+                    device['status'] = None
                 sensors.append(device)
             self._cacheSensors = sensors
             
