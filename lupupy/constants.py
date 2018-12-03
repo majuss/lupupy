@@ -15,12 +15,14 @@ PROJECT_AUTHOR = 'Majuss'
 MODE_AWAY = 'Arm'
 MODE_HOME = 'Home'
 MODE_DISARMED = 'Disarm'
+MODE_ALARM_TRIGGERED = 'Einbruch'
 ALL_MODES = [MODE_DISARMED, MODE_HOME, MODE_AWAY]
 MODE_TRANSLATION = {'Disarm' : 2, 'Home' : 1, 'Arm' : 0}
 
 STATE_ALARM_DISARMED = 'disarmed'
 STATE_ALARM_ARMED_HOME = 'armed_home'
 STATE_ALARM_ARMED_AWAY = 'armed_away'
+STATE_ALARM_TRIGGERED = 'alarm_triggered'
 MODE_TRANSLATION_GENERIC = {'Disarm' : 'disarmed', 'Home' : 'armed_home', 'Arm' : 'armed_away'}
 DEFAULT_MODE = MODE_AWAY
 

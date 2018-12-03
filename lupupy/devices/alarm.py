@@ -82,6 +82,11 @@ class LupusecAlarm(LupusecSwitch):
         return self.mode == CONST.MODE_AWAY
 
     @property
+    def is_alarm_triggered(self):
+        """Is alarm in away mode."""
+        return self.mode == CONST.STATE_ALARM_TRIGGERED
+
+    @property
     def mode(self):
         """Get alarm mode."""
         mode = self.get_value('mode')

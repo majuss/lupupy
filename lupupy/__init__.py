@@ -1,6 +1,8 @@
 import string
 import requests
 import demjson
+import pickle
+import os
 import time
 import logging
 
@@ -12,6 +14,8 @@ from lupupy.exceptions import LupusecException
 
 
 _LOGGER = logging.getLogger(__name__)
+user = os.getlogin()
+
 
 class Lupusec():
     """Interface to Lupusec Webservices."""
@@ -27,6 +31,13 @@ class Lupusec():
 
         self._mode = None
         self._devices = None
+
+        try:
+            self._history_cache = pickle.load(open("/Users/" + user + "/.lupusec_history_cache", "rb"))
+        except (OSError, IOError) as e:
+            self._history_cache = []
+            pickle.dump(self._history_cache, open("/Users/" + user + "/.lupusec_history_cache", "wb"))
+
         self._panel = self.get_panel()
         self._cacheSensors = None
         self._cacheStampS = time.time()
@@ -38,7 +49,8 @@ class Lupusec():
 
     def _request_get(self, action):
         response = self.session.get(self.api_url + action, timeout=15)
-        _LOGGER.debug('Action and statuscode of apiGET command: %s, %s', action, response.status_code)
+        _LOGGER.debug('Action and statuscode of apiGET command: %s, %s',
+                      action, response.status_code)
         return response
 
     def _request_post(self, action, params={}):
@@ -51,7 +63,7 @@ class Lupusec():
         textdata = textdata[i+1:-2]
         textdata = demjson.decode(textdata)
         return textdata
-    
+
     def get_power_switches(self):
         stampNow = time.time()
         length = len(self._devices)
@@ -73,9 +85,9 @@ class Lupusec():
                     _LOGGER.debug('Pss skipped, not active')
                 counter += 1
             self._cachePss = powerSwitches
-        
+
         return self._cachePss
-    
+
     def get_sensors(self):
         stamp_now = time.time()
         if self._cacheSensors is None or stamp_now - self._cacheStampS > 2.0:
@@ -94,10 +106,10 @@ class Lupusec():
                     device['status'] = None
                 sensors.append(device)
             self._cacheSensors = sensors
-            
+
         return self._cacheSensors
 
-    def get_panel(self): #we are trimming the json from Lupusec heavily, since its bullcrap
+    def get_panel(self):  # we are trimming the json from Lupusec heavily, since its bullcrap
         response = self._request_get('panelCondGet')
         if response.status_code != 200:
             print(response.text)
@@ -109,11 +121,23 @@ class Lupusec():
         panel['type'] = CONST.ALARM_TYPE
         panel['name'] = CONST.ALARM_NAME
 
+        history = self.get_history()
+
+        for histrow in history:
+            if histrow not in self._history_cache:
+                if 'Webserver' in histrow['a']:
+                    panel['mode'] = CONST.STATE_ALARM_TRIGGERED
+                    print('alarm detected')
+                self._history_cache.append(histrow)
+                pickle.dump(self._history_cache, open("/Users/" + user + "/.lupusec_history_cache", "wb"))
+
+        print(self._history_cache)
+
         return panel
 
     def get_history(self):
         response = self._request_get('historyGet')
-        return self.clean_json(response.text)
+        return self.clean_json(response.text)['hisrows']
 
     def refresh(self):
         """Do a full refresh of all devices and automations."""
@@ -161,9 +185,10 @@ class Lupusec():
                 alarmDevice = ALARM.create_alarm(panelJson, self)
                 self._devices['0'] = alarmDevice
 
-            #Now we will handle the power switches
+            # Now we will handle the power switches
             switches = self.get_power_switches()
-            _LOGGER.debug('Get active the power switches in get_devices: %s', switches)
+            _LOGGER.debug(
+                'Get active the power switches in get_devices: %s', switches)
 
             for deviceJson in switches:
                 # Attempt to reuse an existing device
@@ -209,7 +234,7 @@ class Lupusec():
             refresh = False
 
         return self.get_device(CONST.ALARM_DEVICE_ID, refresh)
-    
+
     def set_mode(self, mode):
         r = self._request_post(
             "panelCondPost",
@@ -219,6 +244,7 @@ class Lupusec():
         )
         responseJson = self.clean_json(r.text)
         return responseJson
+
 
 def newDevice(deviceJson, lupusec):
     """Create new device object for the given type."""
