@@ -83,7 +83,7 @@ class LupusecAlarm(LupusecSwitch):
 
     @property
     def is_alarm_triggered(self):
-        """Is alarm in away mode."""
+        """Is alarm in alarm triggered mode."""
         return self.mode == CONST.STATE_ALARM_TRIGGERED
 
     @property

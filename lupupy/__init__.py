@@ -127,11 +127,8 @@ class Lupusec():
             if histrow not in self._history_cache:
                 if 'Webserver' in histrow['s']:
                     panel['mode'] = CONST.STATE_ALARM_TRIGGERED
-                    print('alarm detected')
                 self._history_cache.append(histrow)
                 pickle.dump(self._history_cache, open("/Users/" + user + "/.lupusec_history_cache", "wb"))
-
-        print(self._history_cache)
 
         return panel
 
