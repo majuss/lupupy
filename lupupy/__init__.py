@@ -125,7 +125,7 @@ class Lupusec():
 
         for histrow in history:
             if histrow not in self._history_cache:
-                if 'Webserver' in histrow['a']:
+                if 'Webserver' in histrow['s']:
                     panel['mode'] = CONST.STATE_ALARM_TRIGGERED
                     print('alarm detected')
                 self._history_cache.append(histrow)
