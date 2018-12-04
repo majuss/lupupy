@@ -5,6 +5,7 @@ import pickle
 import os
 import time
 import logging
+from pathlib import Path
 
 import lupupy.devices.alarm as ALARM
 import lupupy.constants as CONST
@@ -12,10 +13,8 @@ from lupupy.devices.binary_sensor import LupusecBinarySensor
 from lupupy.devices.switch import LupusecSwitch
 from lupupy.exceptions import LupusecException
 
-
 _LOGGER = logging.getLogger(__name__)
-user = os.getlogin()
-
+home = str(Path.home())
 
 class Lupusec():
     """Interface to Lupusec Webservices."""
@@ -33,10 +32,10 @@ class Lupusec():
         self._devices = None
 
         try:
-            self._history_cache = pickle.load(open("/Users/" + user + "/.lupusec_history_cache", "rb"))
+            self._history_cache = pickle.load(open(home + "/" + CONST.HISTORY_CACHE_NAME, "rb"))
         except (OSError, IOError) as e:
             self._history_cache = []
-            pickle.dump(self._history_cache, open("/Users/" + user + "/.lupusec_history_cache", "wb"))
+            pickle.dump(self._history_cache, open(home + "/" + CONST.HISTORY_CACHE_NAME, "wb"))
 
         self._panel = self.get_panel()
         self._cacheSensors = None
@@ -125,16 +124,16 @@ class Lupusec():
 
         for histrow in history:
             if histrow not in self._history_cache:
-                if 'Webserver' in histrow['s']:
+                if CONST.MODE_ALARM_TRIGGERED in histrow[CONST.HISTORY_ALARM_COLUMN]:
                     panel['mode'] = CONST.STATE_ALARM_TRIGGERED
                 self._history_cache.append(histrow)
-                pickle.dump(self._history_cache, open("/Users/" + user + "/.lupusec_history_cache", "wb"))
+                pickle.dump(self._history_cache, open(home + "/" + CONST.HISTORY_CACHE_NAME, "wb"))
 
         return panel
 
     def get_history(self):
-        response = self._request_get('historyGet')
-        return self.clean_json(response.text)['hisrows']
+        response = self._request_get(CONST.HISTORY_REQUEST)
+        return self.clean_json(response.text)[CONST.HISTORY_HEADER]
 
     def refresh(self):
         """Do a full refresh of all devices and automations."""
