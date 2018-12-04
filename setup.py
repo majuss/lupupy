@@ -25,7 +25,8 @@ setup(
     install_requires=[
         'requests>=2.12.4',
         'demjson',
-        'colorlog'
+        'colorlog',
+        'pathlib'
     ],
     test_suite='tests',
     entry_points={
