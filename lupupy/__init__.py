@@ -33,11 +33,13 @@ class Lupusec():
             self.mode_translation = {'Disarm': 2, 'Home': 1, 'Arm': 0}
             self.key_mode = 'mode_st'
             self.key_sensors = 'sensorListGet'
+            self.key_device_id = 'no'
             self._request_post('login')
         elif model == 'xt3':
             self.mode_translation = {'Disarm': 0, 'Arm': 1, 'Home': 2}
             self.key_mode = 'mode_a1'  # Could also be mode_a2 for area 2. TODO: Needs to be made configurable
             self.key_sensors = 'deviceListGet'
+            self.key_device_id = 'sid'
 
             # On XT3, we need to get a token that will be sent which each request
             token_response = self._request_get('tokenGet')  # Example response: {"result" : 1, "message" : "..."}
@@ -116,13 +118,9 @@ class Lupusec():
             sensors = []
             for device in response:
                 device['status'] = device['cond']
-                if self.model == 'xt1':
-                    device['device_id'] = device['no']
-                    device.pop('no')
-                if self.model == 'xt3':
-                    device['device_id'] = device['sid']
-                    device.pop('sid')
+                device['device_id'] = device[self.key_device_id]
                 device.pop('cond')
+                device.pop(self.key_device_id)
                 if not device['status']:
                     device['status'] = 'Geschlossen'
                 else:
