@@ -28,7 +28,7 @@ class LupusecAlarm(LupusecSwitch):
             _LOGGER.info('No mode supplied')
         elif mode not in CONST.ALL_MODES:
             _LOGGER.warning('Invalid mode')
-        response_object = self._lupusec.set_mode(CONST.MODE_TRANSLATION[mode])
+        response_object = self._lupusec.set_mode(self._lupusec.mode_translation[mode])
         if response_object['result'] != 1:
             _LOGGER.warning('Mode setting unsuccessful')
 

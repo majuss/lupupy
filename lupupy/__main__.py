@@ -43,6 +43,11 @@ def get_arguments():
     parser = argparse.ArgumentParser("Lupupy: Command Line Utility")
 
     parser.add_argument(
+        '-m', '--model',
+        help='Model',
+        required=False, choices=['xt1', 'xt3'], default='xt1')
+
+    parser.add_argument(
         '-u', '--username',
         help='Username',
         required=False)
@@ -124,7 +129,7 @@ def call():
         if args.username and args.password and args.ip_address:
             lupusec = lupupy.Lupusec(ip_address=args.ip_address,
                                      username=args.username,
-                                     password=args.password)
+                                     password=args.password, model=args.model)
         
         if args.arm:
             if lupusec.get_alarm().set_away():

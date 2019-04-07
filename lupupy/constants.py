@@ -17,7 +17,14 @@ MODE_HOME = 'Home'
 MODE_DISARMED = 'Disarm'
 MODE_ALARM_TRIGGERED = 'Einbruch'
 ALL_MODES = [MODE_DISARMED, MODE_HOME, MODE_AWAY]
-MODE_TRANSLATION = {'Disarm' : 2, 'Home' : 1, 'Arm' : 0}
+
+XT3_MODES_TO_TEXT = {
+    '{AREA_MODE_0}': 'Disarm',
+    '{AREA_MODE_1}': 'Arm',
+    '{AREA_MODE_2}': 'Home',
+    '{AREA_MODE_3}': 'Home',
+    '{AREA_MODE_4}': 'Home'
+}
 
 STATE_ALARM_DISARMED = 'disarmed'
 STATE_ALARM_ARMED_HOME = 'armed_home'
@@ -48,9 +55,21 @@ ALARM_TYPE = 'Alarm'
 # GENERIC Lupusec DEVICE TYPES
 TYPE_WINDOW = "Fensterkontakt"
 TYPE_DOOR = "Türkontakt"
+TYPE_CONTACT_XT3 = 4
+TYPE_WATER_XT3 = 5
+# TYPE_MOTION_SENSOR_XT3 = 9
+TYPE_SMOKE_XT3 = 11
+TYPE_POWER_SWITCH_1_XT3 = 24
+TYPE_POWER_SWITCH_2_XT3 = 25
 TYPE_POWER_SWITCH = 'Steckdose'
-TYPE_SWITCH = [TYPE_POWER_SWITCH]
-TYPE_OPENING = [TYPE_DOOR, TYPE_WINDOW]
+TYPE_SWITCH = [TYPE_POWER_SWITCH, TYPE_POWER_SWITCH_1_XT3, TYPE_POWER_SWITCH_2_XT3]
+TYPE_OPENING = [TYPE_DOOR, TYPE_WINDOW, TYPE_CONTACT_XT3]
 BINARY_SENSOR_TYPES = TYPE_OPENING
-TYPE_SENSOR = ['Rauchmelder', 'Wassermelder']
-TYPE_TRANSLATION = {'Fensterkontakt' : 'window', 'Türkontakt' : 'door'}
+TYPE_SENSOR = ['Rauchmelder', 'Wassermelder', TYPE_WATER_XT3, TYPE_SMOKE_XT3]
+TYPE_TRANSLATION = {
+    'Fensterkontakt': 'window',
+    'Türkontakt': 'door',
+    TYPE_CONTACT_XT3: 'Fenster-/Türkontakt',
+    TYPE_WATER_XT3: 'Wassermelder',
+    TYPE_SMOKE_XT3: 'Rauchmelder',
+}

@@ -23,7 +23,8 @@ class LupusecDevice(object):
         self._lupusec = lupusec
 
         if not self._name:
-            self._name = self.type + ' ' + self.device_id
+            # In a previous version, type was used instead of _generic_type, but on XT3 type is an integer
+            self._name = self._generic_type + ' ' + self.device_id
 
     def get_value(self, name):
         """Get a value from the json object.
