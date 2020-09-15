@@ -25,8 +25,7 @@ setup(
     install_requires=[
         'requests>=2.12.4',
         'demjson',
-        'colorlog',
-        "pathlib ; python_version<'3.5'",
+        'colorlog'
     ],
     test_suite='tests',
     entry_points={
