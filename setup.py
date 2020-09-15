@@ -26,7 +26,7 @@ setup(
         'requests>=2.12.4',
         'demjson',
         'colorlog',
-        'pathlib'
+        "pathlib ; python_version<'3.5'",
     ],
     test_suite='tests',
     entry_points={
