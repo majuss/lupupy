@@ -145,7 +145,7 @@ def call():
                 _LOGGER.warning('Failed to change alarm mode to home')
             
         if args.history:
-            _LOGGER.info(json.dumps(lupusec.get_history()['hisrows'], indent=4, sort_keys=True))
+            _LOGGER.info(json.dumps(lupusec.get_history(), indent=4, sort_keys=True))
 
         if args.status:
             _LOGGER.info('Mode of panel: %s', lupusec.get_alarm().mode)
