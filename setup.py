@@ -24,7 +24,7 @@ setup(
     python_requires='>=3.5',
     install_requires=[
         'requests>=2.12.4',
-        'demjson',
+        'pyyaml',
         'colorlog'
     ],
     test_suite='tests',

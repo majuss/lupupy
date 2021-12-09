@@ -1,10 +1,10 @@
 import string
 import requests
-import demjson
 import pickle
 import os
 import time
 import logging
+import yaml
 from pathlib import Path
 
 import lupupy.devices.alarm as ALARM
@@ -60,7 +60,7 @@ class Lupusec():
         textdata = textdata.replace("\t", "")
         i = textdata.index('\n')
         textdata = textdata[i+1:-2]
-        textdata = demjson.decode(textdata)
+        textdata = yaml.load(textdata, Loader=yaml.BaseLoader)
         return textdata
 
     def get_power_switches(self):
