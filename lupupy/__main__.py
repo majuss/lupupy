@@ -3,8 +3,6 @@ import argparse
 import logging
 import json
 
-from lupupy.exceptions import LupusecException
-
 _LOGGER = logging.getLogger('lupuseccl')
 
 def setup_logging(log_level=logging.INFO):
