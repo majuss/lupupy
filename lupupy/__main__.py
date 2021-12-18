@@ -152,7 +152,7 @@ def call():
             for device in lupusec.get_devices():
                 _devicePrint(device)
                 
-    except lupupy.LupusecException as exc:
+    except Exception as exc:
         _LOGGER.error(exc)
     finally:
         _LOGGER.info('--Finished running--')

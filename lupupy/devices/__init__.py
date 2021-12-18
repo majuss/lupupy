@@ -23,7 +23,7 @@ class LupusecDevice(object):
         self._lupusec = lupusec
 
         if not self._name:
-            self._name = self.type + ' ' + self.device_id
+            self._name = self._generic_type + ' ' + self.device_id
 
     def get_value(self, name):
         """Get a value from the json object.

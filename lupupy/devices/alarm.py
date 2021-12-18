@@ -8,7 +8,7 @@ import lupupy.constants as CONST
 _LOGGER = logging.getLogger(__name__)
 
 
-def create_alarm(panel_json, lupusec, area='1'):
+def create_alarm(panel_json, lupusec, area="1"):
     """Create a new alarm device from a panel response."""
     return LupusecAlarm(panel_json, lupusec, area)
 
@@ -16,24 +16,24 @@ def create_alarm(panel_json, lupusec, area='1'):
 class LupusecAlarm(LupusecSwitch):
     """Class to represent the Lupusec alarm as a device."""
 
-    def __init__(self, json_obj, lupusec, area='1'):
+    def __init__(self, json_obj, lupusec, area="1"):
         """Set up Lupusec alarm device."""
         LupusecSwitch.__init__(self, json_obj, lupusec)
         self._area = area
 
     def set_mode(self, mode):
         """Set Lupusec alarm mode."""
-        _LOGGER.debug('State change called from alarm device')
+        _LOGGER.debug("State change called from alarm device")
         if not mode:
-            _LOGGER.info('No mode supplied')
+            _LOGGER.info("No mode supplied")
         elif mode not in CONST.ALL_MODES:
-            _LOGGER.warning('Invalid mode')
-        response_object = self._lupusec.set_mode(CONST.MODE_TRANSLATION[mode])
-        if response_object['result'] is not "1":
-            _LOGGER.warning('Mode setting unsuccessful')
+            _LOGGER.warning("Invalid mode")
+        response_object = self._lupusec.set_mode(self._lupusec.mode_translation[mode])
+        if response_object["result"] != 1 and response_object["result"] is not "1":
+            _LOGGER.warning("Mode setting unsuccessful")
 
-        self._json_state['mode'] = mode
-        _LOGGER.info('Mode set to: %s', mode)
+        self._json_state["mode"] = mode
+        _LOGGER.info("Mode set to: %s", mode)
         return True
 
     def set_home(self):
@@ -89,7 +89,7 @@ class LupusecAlarm(LupusecSwitch):
     @property
     def mode(self):
         """Get alarm mode."""
-        mode = self.get_value('mode')
+        mode = self.get_value("mode")
         return mode
 
     @property
@@ -100,9 +100,9 @@ class LupusecAlarm(LupusecSwitch):
     @property
     def battery(self):
         """Return true if base station on battery backup."""
-        return int(self._json_state.get('battery', '0')) == 1
+        return int(self._json_state.get("battery", "0")) == 1
 
     @property
     def is_cellular(self):
         """Return true if base station on cellular backup."""
-        return int(self._json_state.get('is_cellular', '0')) == 1
+        return int(self._json_state.get("is_cellular", "0")) == 1
