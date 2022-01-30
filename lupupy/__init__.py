@@ -3,6 +3,7 @@ import pickle
 import time
 import logging
 import json
+import unicodedata
 import yaml
 from pathlib import Path
 
@@ -88,6 +89,9 @@ class Lupusec:
             self.api_url + action, data=params, headers=self.headers
         )
 
+    def remove_control_characters(self, s):
+        return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
+
     def clean_json(self, textdata):
         _LOGGER.debug("Input for clean json" + textdata)
         if self.model == 1:
@@ -102,7 +106,7 @@ class Lupusec:
                 )
             return textdata
         else:
-            return json.loads(textdata)
+            return json.loads(self.remove_control_characters(textdata))
 
     def get_power_switches(self):
         stampNow = time.time()
@@ -211,7 +215,7 @@ class Lupusec:
                 if device:
                     device.update(deviceJson)
                 else:
-                    device = self.newDevice(deviceJson, self)
+                    device = newDevice(deviceJson, self)
 
                     if not device:
                         _LOGGER.info("Device is unknown")
@@ -246,7 +250,7 @@ class Lupusec:
                     if device:
                         device.update(deviceJson)
                     else:
-                        device = self.newDevice(deviceJson, self)
+                        device = newDevice(deviceJson, self)
                         if not device:
                             _LOGGER.info("Device is unknown")
                             continue
