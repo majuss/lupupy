@@ -58,7 +58,8 @@ class Lupusec:
             self._history_cache = pickle.load(
                 open(home + "/" + CONST.HISTORY_CACHE_NAME, "rb")
             )
-        except (OSError, IOError) as e:
+        except Exception as e:
+            _LOGGER.debug(e)
             self._history_cache = []
             pickle.dump(
                 self._history_cache, open(home + "/" + CONST.HISTORY_CACHE_NAME, "wb")
