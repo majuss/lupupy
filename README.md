@@ -29,7 +29,7 @@ This will retrieve a simple list of all devices.
 
 ### Shortcomings
 
-The library currently only works with the XT1 alarm panel. The json responses of other panel will differ and most likely not work. Most of the advanced devices are not yet supported, I don't have the hardware to reverse engineer these devices. If someone need a further integration please open an issue and we will find a way.
+The library currently only works with the XT1 alarm panel and since version 0.1.1 at least with the XT2. Others may work but aren't tested yet. The json responses of other panel will differ and most likely not work. Most of the advanced devices are not yet supported, I don't have the hardware to reverse engineer these devices. If someone need a further integration please open an issue and we will find a way.
 
 ### Currently supported features:
 - Status of binary sensors like door and window sensors
