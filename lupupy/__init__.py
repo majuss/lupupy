@@ -134,25 +134,31 @@ class Lupusec:
         return self._cachePss
 
     def get_sensors(self):
-        stamp_now = time.time()
-        if self._cacheSensors is None or stamp_now - self._cacheStampS > 2.0:
-            self._cacheStampS = stamp_now
-            response = self._request_get(self.api_sensors)
-            response = self.clean_json(response.text)["senrows"]
-            sensors = []
-            for device in response:
-                device["status"] = device["cond"]
-                device["device_id"] = device[self.api_device_id]
-                device.pop("cond")
-                device.pop(self.api_device_id)
-                if not device["status"]:
-                    device["status"] = "Geschlossen"
-                else:
-                    device["status"] = None
-                sensors.append(device)
-            self._cacheSensors = sensors
+            stamp_now = time.time()
+            if self._cacheSensors is None or stamp_now - self._cacheStampS > 2.0:
+                self._cacheStampS = stamp_now
+                response = self._request_get(self.api_sensors)
+                response = self.clean_json(response.text)["senrows"]
+                sensors = []
+                for device in response:
+                    if self.model == 1:
+                        device["status"] = device["cond"]
+                    else:
+                        if "openClose" in device:
+                            device["status"] = device["openClose"]
+                            device.pop("openClose")
+                    device["device_id"] = device[self.api_device_id]
+                    device.pop("cond")
+                    device.pop(self.api_device_id)
+                    if device["status"] == "{WEB_MSG_DC_OPEN}":
+                        print("yes is open " + device["name"])
+                        device["status"] = 1
+                    if device["status"] == "{WEB_MSG_DC_CLOSE}" or device["status"] == "0":
+                        device["status"] = "Geschlossen"
+                    sensors.append(device)
+                self._cacheSensors = sensors
 
-        return self._cacheSensors
+            return self._cacheSensors
 
     def get_panel(
         self,

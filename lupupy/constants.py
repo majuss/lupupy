@@ -1,6 +1,6 @@
 # Used in setup.py
 # -*- coding: utf-8 -*-
-VERSION = "0.1.3"
+VERSION = "0.1.9"
 PROJECT_PACKAGE_NAME = "lupupy"
 PROJECT_LICENSE = "MIT"
 PROJECT_URL = "http://www.github.com/majuss/lupupy"
@@ -54,6 +54,9 @@ STATUS_CLOSED = "Geschlossen"
 STATUS_CLOSED_INT = 0
 STATUS_OPEN = "Offen"
 STATUS_OPEN_INT = 1
+STATUS_OPEN_WEB = "{WEB_MSG_DC_OPEN}"
+STATUS_CLOSED_WEB = "{WEB_MSG_DC_CLOSE}"
+
 
 ALARM_NAME = "Lupusec Alarm"
 ALARM_DEVICE_ID = "0"

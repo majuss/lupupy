@@ -18,5 +18,8 @@ class LupusecBinarySensor(LupusecDevice):
             CONST.STATUS_OFF,
             CONST.STATUS_OFFLINE,
             CONST.STATUS_CLOSED,
+            CONST.STATUS_CLOSED_INT,
+            CONST.STATUS_OPEN_WEB,
+            CONST.STATUS_CLOSED_WEB,
             CONST.STATUS_OPEN,
         )
