@@ -26,15 +26,15 @@ class Lupusec:
         self.session = requests.Session()
         self.session.auth = (username, password)
         self.api_url = "http://{}/action/".format(ip_address)
-        self.model = "unknown"
         self.headers = None
-        response = self._request_get("tokenGet")
-
-        if response.status_code == 404:
-            resp = self.session.get(CONST.DEVICES_API_XT1)
+        self.model = self._get_model(ip_address)
+        self._mode = None
+        self._devices = None
+        
+        if self.model == 1:
+            resp = self.session.get(self.api_url + CONST.DEVICES_API_XT1)
             if resp.status_code == 200:
                 _LOGGER.debug("XT1 found, setting it up")
-                self.model = 1
                 self.mode_translation = CONST.MODE_TRANSLATION_XT1
                 self.api_mode = "mode_st"
                 self.api_sensors = CONST.DEVICES_API_XT1
@@ -43,16 +43,17 @@ class Lupusec:
             else:
                 _LOGGER.debug("Unknown error while finding out which model is used")
                 return
-        else:
+        elif self.model == 2:
             _LOGGER.debug("XT2 or higher found, setting up")
-            self.model = 2
             self.mode_translation = CONST.MODE_TRANSLATION_XT2
             self.api_mode = "mode_a1"
             self.api_sensors = CONST.DEVICES_API_XT2
             self.api_device_id = "sid"
+            response = self._request_get("tokenGet")
             self.headers = {"X-Token": json.loads(response.text)["message"]}
-        self._mode = None
-        self._devices = None
+        else:
+            _LOGGER.error("Unable to setup Lupusec panel, model not supported.")
+
 
         try:
             self._history_cache = pickle.load(
@@ -89,6 +90,13 @@ class Lupusec:
         return self.session.post(
             self.api_url + action, data=params, headers=self.headers
         )
+
+    def _get_model(self, ip_address):
+        response = requests.get("http://{}/images/model.gif".format(ip_address))
+        if response.status_code == 200:
+            return 1
+        else:
+            return 2
 
     def remove_control_characters(self, s):
         return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
