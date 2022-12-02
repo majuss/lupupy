@@ -11,6 +11,7 @@ import lupupy.devices.alarm as ALARM
 import lupupy.constants as CONST
 from lupupy.devices.binary_sensor import LupusecBinarySensor
 from lupupy.devices.switch import LupusecSwitch
+from lupupy.exceptions import LupusecException
 
 _LOGGER = logging.getLogger(__name__)
 home = str(Path.home())
@@ -30,7 +31,7 @@ class Lupusec:
         self.model = self._get_model(ip_address)
         self._mode = None
         self._devices = None
-        
+
         if self.model == 1:
             resp = self.session.get(self.api_url + CONST.DEVICES_API_XT1)
             if resp.status_code == 200:
@@ -54,12 +55,11 @@ class Lupusec:
         else:
             _LOGGER.error("Unable to setup Lupusec panel, model not supported.")
 
-
         try:
             self._history_cache = pickle.load(
                 open(home + "/" + CONST.HISTORY_CACHE_NAME, "rb")
             )
-        except Exception as e:
+        except LupusecException as e:
             _LOGGER.debug(e)
             self._history_cache = []
             pickle.dump(
@@ -99,14 +99,14 @@ class Lupusec:
             return 2
 
     def remove_control_characters(self, s):
-        return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
+        return "".join(ch for ch in s if unicodedata.category(ch)[0] != "C")
 
     def clean_json(self, textdata):
         _LOGGER.debug("Input for clean json" + textdata)
         if self.model == 1:
             textdata = textdata.replace("\t", "")
             i = textdata.index("\n")
-            textdata = textdata[i + 1 : -2]
+            textdata = textdata[i + 1:-2]
             try:
                 textdata = yaml.load(textdata, Loader=yaml.BaseLoader)
             except Exception as e:
@@ -142,31 +142,31 @@ class Lupusec:
         return self._cachePss
 
     def get_sensors(self):
-            stamp_now = time.time()
-            if self._cacheSensors is None or stamp_now - self._cacheStampS > 2.0:
-                self._cacheStampS = stamp_now
-                response = self._request_get(self.api_sensors)
-                response = self.clean_json(response.text)["senrows"]
-                sensors = []
-                for device in response:
-                    if self.model == 1:
-                        device["status"] = device["cond"]
-                    else:
-                        if "openClose" in device:
-                            device["status"] = device["openClose"]
-                            device.pop("openClose")
-                    device["device_id"] = device[self.api_device_id]
-                    device.pop("cond")
-                    device.pop(self.api_device_id)
-                    if device["status"] == "{WEB_MSG_DC_OPEN}":
-                        print("yes is open " + device["name"])
-                        device["status"] = 1
-                    if device["status"] == "{WEB_MSG_DC_CLOSE}" or device["status"] == "0":
-                        device["status"] = "Geschlossen"
-                    sensors.append(device)
-                self._cacheSensors = sensors
+        stamp_now = time.time()
+        if self._cacheSensors is None or stamp_now - self._cacheStampS > 2.0:
+            self._cacheStampS = stamp_now
+            response = self._request_get(self.api_sensors)
+            response = self.clean_json(response.text)["senrows"]
+            sensors = []
+            for device in response:
+                if self.model == 1:
+                    device["status"] = device["cond"]
+                else:
+                    if "openClose" in device:
+                        device["status"] = device["openClose"]
+                        device.pop("openClose")
+                device["device_id"] = device[self.api_device_id]
+                device.pop("cond")
+                device.pop(self.api_device_id)
+                if device["status"] == "{WEB_MSG_DC_OPEN}":
+                    print("yes is open " + device["name"])
+                    device["status"] = 1
+                if device["status"] == "{WEB_MSG_DC_CLOSE}" or device["status"] == "0":
+                    device["status"] = "Geschlossen"
+                sensors.append(device)
+            self._cacheSensors = sensors
 
-            return self._cacheSensors
+        return self._cacheSensors
 
     def get_panel(
         self,
@@ -255,7 +255,9 @@ class Lupusec:
             # Now we will handle the power switches
             if self.model == 1:
                 switches = self.get_power_switches()
-                _LOGGER.debug("Get active the power switches in get_devices: %s", switches)
+                _LOGGER.debug(
+                    "Get active the power switches in get_devices: %s", switches
+                )
 
                 for deviceJson in switches:
                     # Attempt to reuse an existing device
