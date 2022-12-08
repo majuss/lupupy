@@ -55,17 +55,10 @@ class Lupusec:
         else:
             _LOGGER.error("Unable to setup Lupusec panel, model not supported.")
 
-        try:
-            self._history_cache = pickle.load(
-                open(home + "/" + CONST.HISTORY_CACHE_NAME, "rb")
-            )
-        except LupusecException as e:
-            _LOGGER.debug(e)
-            self._history_cache = []
-            pickle.dump(
-                self._history_cache, open(home + "/" + CONST.HISTORY_CACHE_NAME, "wb")
-            )
-
+# Remove the initial pickle.load of the history_cache as the exception which is thrown when the file does not exist,
+# stops Homeassistant from starting the component             
+# Instead initialize empty history_cache
+        self._history_cache = []
         self._panel = self.get_panel()
         self._cacheSensors = None
         self._cacheStampS = time.time()
@@ -158,10 +151,12 @@ class Lupusec:
                 device["device_id"] = device[self.api_device_id]
                 device.pop("cond")
                 device.pop(self.api_device_id)
-                if device["status"] == "{WEB_MSG_DC_OPEN}":
+                # XT1 does not have {WEB_MSG_DC_OPEN}, therefor additional check for CONST.STATUS_OPEN
+                if device["status"] == "{WEB_MSG_DC_OPEN}" or device["status"]==CONST.STATUS_OPEN:
                     print("yes is open " + device["name"])
                     device["status"] = 1
-                if device["status"] == "{WEB_MSG_DC_CLOSE}" or device["status"] == "0":
+                # XT1 does only report "cond"="" in case of a closed window-sensor, therefor additional check for ""
+                if device["status"] == "{WEB_MSG_DC_CLOSE}" or device["status"] == "0" or device["status"] == "":
                     device["status"] = "Geschlossen"
                 sensors.append(device)
             self._cacheSensors = sensors
