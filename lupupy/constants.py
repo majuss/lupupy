@@ -10,7 +10,7 @@ PROJECT_LONG_DESCRIPTION = (
     " the Lupus Electronics alarm panel."
     " Its intented to get used in various"
     " smart home services to get a full"
-    " integration of all you devices."
+    " integration of all your devices."
 )
 PROJECT_AUTHOR = "Majuss"
 
