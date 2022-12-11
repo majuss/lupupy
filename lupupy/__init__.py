@@ -59,7 +59,7 @@ class Lupusec:
             self._history_cache = pickle.load(
                 open(home + "/" + CONST.HISTORY_CACHE_NAME, "rb")
             )
-        except LupusecException as e:
+        except FileNotFoundError as e:
             _LOGGER.debug(e)
             self._history_cache = []
             pickle.dump(
@@ -158,10 +158,9 @@ class Lupusec:
                 device["device_id"] = device[self.api_device_id]
                 device.pop("cond")
                 device.pop(self.api_device_id)
-                if device["status"] == "{WEB_MSG_DC_OPEN}":
-                    print("yes is open " + device["name"])
+                if device["status"] == "{WEB_MSG_DC_OPEN}" or device["status"] == CONST.STATUS_OPEN:
                     device["status"] = 1
-                if device["status"] == "{WEB_MSG_DC_CLOSE}" or device["status"] == "0":
+                if device["status"] == "{WEB_MSG_DC_CLOSE}" or device["status"] == "0" or device["status"] == "":
                     device["status"] = "Geschlossen"
                 sensors.append(device)
             self._cacheSensors = sensors
