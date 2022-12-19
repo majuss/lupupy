@@ -1,6 +1,6 @@
 # Used in setup.py
 # -*- coding: utf-8 -*-
-VERSION = "0.2.3"
+VERSION = "0.2.4"
 PROJECT_PACKAGE_NAME = "lupupy"
 PROJECT_LICENSE = "MIT"
 PROJECT_URL = "http://www.github.com/majuss/lupupy"
@@ -18,6 +18,7 @@ MODE_AWAY = "Arm"
 MODE_HOME = "Home"
 MODE_DISARMED = "Disarm"
 MODE_ALARM_TRIGGERED = "Einbruch"
+MODE_ALARM_TRIGGERED_XT2 = "3"
 ALL_MODES = [MODE_DISARMED, MODE_HOME, MODE_AWAY]
 MODE_TRANSLATION_XT1 = {"Disarm": 2, "Home": 1, "Arm": 0}
 MODE_TRANSLATION_XT2 = {"Disarm": 0, "Arm": 1, "Home": 2}
@@ -40,9 +41,12 @@ MODE_TRANSLATION_GENERIC = {
 }
 DEFAULT_MODE = MODE_AWAY
 
-HISTORY_REQUEST = "historyGet"
+HISTORY_REQUEST_XT1 = "historyGet"
+HISTORY_REQUEST_XT2 = "recordListGet"
 HISTORY_ALARM_COLUMN = "a"
+HISTORY_ALARM_COLUMN_XT2 = "type"
 HISTORY_HEADER = "hisrows"
+HISTORY_HEADER_XT2 = "logrows"
 HISTORY_CACHE_NAME = ".lupusec_history_cache"
 
 STATUS_ON_INT = 0

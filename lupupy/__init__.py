@@ -183,15 +183,11 @@ class Lupusec:
         panel["type"] = CONST.ALARM_TYPE
         panel["name"] = CONST.ALARM_NAME
 
-        history = self.get_history()
-
         if self.model == 1:
+            history = self.get_history_xt1()
             for histrow in history:
                 if histrow not in self._history_cache:
-                    if (
-                        CONST.MODE_ALARM_TRIGGERED
-                        in histrow[CONST.HISTORY_ALARM_COLUMN]
-                    ):
+                    if (CONST.MODE_ALARM_TRIGGERED in histrow[CONST.HISTORY_ALARM_COLUMN]):
                         panel["mode"] = CONST.STATE_ALARM_TRIGGERED
                     self._history_cache.append(histrow)
                     pickle.dump(
@@ -199,12 +195,26 @@ class Lupusec:
                         open(home + "/" + CONST.HISTORY_CACHE_NAME, "wb"),
                     )
         elif self.model == 2:
-            _LOGGER.debug("Alarm on XT2 not implemented")
+            history = self.get_history_xt2()
+            for histrow in history:
+                if histrow not in self._history_cache:
+                    if histrow[CONST.HISTORY_ALARM_COLUMN_XT2] == CONST.MODE_ALARM_TRIGGERED_XT2:
+                        panel["mode"] = CONST.STATE_ALARM_TRIGGERED
+                    self._history_cache.append(histrow)
+                    pickle.dump(
+                        self._history_cache,
+                        open(home + "/" + CONST.HISTORY_CACHE_NAME, "wb"),
+                    )
         return panel
 
-    def get_history(self):
-        response = self._request_get(CONST.HISTORY_REQUEST)
+    def get_history_xt1(self):
+        response = self._request_get(CONST.HISTORY_REQUEST_XT1)
         return self.clean_json(response.text)[CONST.HISTORY_HEADER]
+    
+    def get_history_xt2(self):
+        response = self._request_get(CONST.HISTORY_REQUEST_XT2)
+        return self.clean_json(response.text)[CONST.HISTORY_HEADER_XT2]
+
 
     def refresh(self):
         """Do a full refresh of all devices and automations."""
