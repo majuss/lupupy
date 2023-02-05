@@ -172,7 +172,11 @@ class Lupusec:
     ):  # we are trimming the json from Lupusec heavily, since its bullcrap
         response = self._request_get("panelCondGet")
         if response.status_code != 200:
-            raise Exception("Unable to get panel " + str(response.status_code))
+            if response.status_code == 401 and self.model == 2:
+                response = self._request_get("tokenGet")
+                self.headers = {"X-Token": json.loads(response.text)["message"]}
+            else:
+                raise Exception("Unable to get panel " + str(response.status_code))
         panel = self.clean_json(response.text)["updates"]
         panel["mode"] = panel[self.api_mode]
         panel.pop(self.api_mode)
