@@ -31,6 +31,7 @@ class Lupusec:
         self.model = self._get_model(ip_address)
         self._mode = None
         self._devices = None
+        self._fail_counter = 0
 
         if self.model == 1:
             resp = self.session.get(self.api_url + CONST.DEVICES_API_XT1)
@@ -172,11 +173,13 @@ class Lupusec:
     ):  # we are trimming the json from Lupusec heavily, since its bullcrap
         response = self._request_get("panelCondGet")
         if response.status_code != 200:
-            if response.status_code == 401 and self.model == 2:
+            self._fail_counter += 1
+            if response.status_code == 401 and self.model == 2 and self._fail_counter < 5:
                 response = self._request_get("tokenGet")
                 self.headers = {"X-Token": json.loads(response.text)["message"]}
+                self.get_panel()
             else:
-                raise Exception("Unable to get panel " + str(response.status_code))
+                raise Exception("Unable to get panel " + str(response.status_code) + " Failed tries: " + self._fail_counter)
         panel = self.clean_json(response.text)["updates"]
         panel["mode"] = panel[self.api_mode]
         panel.pop(self.api_mode)
