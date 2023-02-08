@@ -116,7 +116,11 @@ class Lupusec:
                 )
             return textdata
         else:
-            return json.loads(self.remove_control_characters(textdata))
+            try:
+                return json.loads(self.remove_control_characters(textdata))
+            except json.decoder.JSONDecodeError as e:
+                _LOGGER.error("Failed to parse JSON from " + str(textdata))
+                _LOGGER.error(e)
 
     def get_power_switches(self):
         stampNow = time.time()

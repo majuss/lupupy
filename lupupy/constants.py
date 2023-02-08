@@ -1,6 +1,6 @@
 # Used in setup.py
 # -*- coding: utf-8 -*-
-VERSION = "0.2.6"
+VERSION = "0.2.8"
 PROJECT_PACKAGE_NAME = "lupupy"
 PROJECT_LICENSE = "MIT"
 PROJECT_URL = "http://www.github.com/majuss/lupupy"
