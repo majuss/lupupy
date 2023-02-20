@@ -51,6 +51,7 @@ class Lupusec:
             self.api_mode = "mode_a1"
             self.api_sensors = CONST.DEVICES_API_XT2
             self.api_device_id = "sid"
+            self._token_ts = time.time()
             response = self._request_get("tokenGet")
             self.headers = {"X-Token": json.loads(response.text)["message"]}
         else:
@@ -77,6 +78,12 @@ class Lupusec:
             self.get_devices()
 
     def _request_get(self, action):
+        if self.model == 2:
+            ts = time.time()
+            if ts - self._token_ts > 60:
+                self._token_ts = ts
+                response = self._request_get("tokenGet")
+                self.headers = {"X-Token": json.loads(response.text)["message"]}
         response = self.session.get(
             self.api_url + action, timeout=15, headers=self.headers
         )
@@ -88,6 +95,12 @@ class Lupusec:
         return response
 
     def _request_post(self, action, params={}):
+        if self.model == 2:
+            ts = time.time()
+            if  ts - self._token_ts > 60:
+                self._token_ts = ts
+                response = self._request_get("tokenGet")
+                self.headers = {"X-Token": json.loads(response.text)["message"]}
         return self.session.post(
             self.api_url + action, data=params, headers=self.headers
         )
