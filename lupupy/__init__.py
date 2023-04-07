@@ -312,7 +312,7 @@ class Lupusec:
         if generic_type:
             devices = []
             for device in self._devices.values():
-                if device.type is not None and device.type in generic_type[0]:
+                if device.type is not None and device.type in generic_type:
                     devices.append(device)
             return devices
 
