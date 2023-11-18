@@ -362,6 +362,10 @@ def newDevice(deviceJson, lupusec):
         return LupusecBinarySensor(deviceJson, lupusec)
     elif type_tag in CONST.TYPE_SENSOR:
         return LupusecBinarySensor(deviceJson, lupusec)
+    elif type_tag in CONST.TYPE_SIREN:
+        return LupusecBinarySensor(deviceJson, lupusec)
+    elif type_tag in CONST.TYPE_KEYPAD:
+        return LupusecBinarySensor(deviceJson, lupusec)
     elif type_tag in CONST.TYPE_SWITCH:
         return LupusecSwitch(deviceJson, lupusec)
     else:
