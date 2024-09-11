@@ -11,6 +11,7 @@ import lupupy.devices.alarm as ALARM
 import lupupy.constants as CONST
 from lupupy.devices.binary_sensor import LupusecBinarySensor
 from lupupy.devices.switch import LupusecSwitch
+from lupupy.devices.temperature_sensor import LupusecTemperatureSensor
 from lupupy.exceptions import LupusecException
 
 _LOGGER = logging.getLogger(__name__)
@@ -234,7 +235,7 @@ class Lupusec:
     def get_history_xt1(self):
         response = self._request_get(CONST.HISTORY_REQUEST_XT1)
         return self.clean_json(response.text)[CONST.HISTORY_HEADER]
-    
+
     def get_history_xt2(self):
         response = self._request_get(CONST.HISTORY_REQUEST_XT2)
         return self.clean_json(response.text)[CONST.HISTORY_HEADER_XT2]
@@ -368,6 +369,8 @@ def newDevice(deviceJson, lupusec):
         return LupusecBinarySensor(deviceJson, lupusec)
     elif type_tag in CONST.TYPE_SWITCH:
         return LupusecSwitch(deviceJson, lupusec)
+    elif type_tag == CONST.TYPE_TEMPERATURE_HUMIDITY_SENSOR:
+        return LupusecTemperatureSensor(deviceJson, lupusec)
     else:
         _LOGGER.info("Device is not known")
     return None
