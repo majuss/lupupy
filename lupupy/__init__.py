@@ -20,13 +20,17 @@ home = str(Path.home())
 class Lupusec:
     """Interface to Lupusec Webservices."""
 
-    def __init__(self, username, password, ip_address, get_devices=False):
+    def __init__(self, username, password, ip_address, get_devices=False, protocol="http"):
         """LupsecAPI constructor requires IP and credentials to the
         Lupusec Webinterface.
         """
         self.session = requests.Session()
         self.session.auth = (username, password)
-        self.api_url = "http://{}/action/".format(ip_address)
+        if protocol != "http" and protocol != "https":
+            protocol="http"
+        if protocol == "https":
+            self.session.verify = False
+        self.api_url = "{}://{}/action/".format(protocol, ip_address)
         self.headers = None
         self.model = self._get_model(ip_address)
         self._mode = None
