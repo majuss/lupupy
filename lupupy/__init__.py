@@ -233,7 +233,19 @@ class Lupusec:
 
     def get_history_xt1(self):
         response = self._request_get(CONST.HISTORY_REQUEST_XT1)
-        return self.clean_json(response.text)[CONST.HISTORY_HEADER]
+        rows = self.clean_json(response.text)[CONST.HISTORY_HEADER]
+        for row in rows:
+            parts = row["s"].split(", ")
+            if len(parts) == 3:
+                row["user"] = parts[2].strip()
+            else:
+                row["user"] = None
+        return rows
+
+
+#    def get_history_xt1(self):
+#        response = self._request_get(CONST.HISTORY_REQUEST_XT1)
+#        return self.clean_json(response.text)[CONST.HISTORY_HEADER]
     
     def get_history_xt2(self):
         response = self._request_get(CONST.HISTORY_REQUEST_XT2)
