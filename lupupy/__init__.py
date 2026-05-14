@@ -242,11 +242,6 @@ class Lupusec:
                 row["user"] = None
         return rows
 
-
-#    def get_history_xt1(self):
-#        response = self._request_get(CONST.HISTORY_REQUEST_XT1)
-#        return self.clean_json(response.text)[CONST.HISTORY_HEADER]
-    
     def get_history_xt2(self):
         response = self._request_get(CONST.HISTORY_REQUEST_XT2)
         return self.clean_json(response.text)[CONST.HISTORY_HEADER_XT2]
