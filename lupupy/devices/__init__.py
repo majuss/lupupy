@@ -1,7 +1,11 @@
 """Init file for devices directory."""
 
+from typing import TYPE_CHECKING
+
 import lupupy.constants as CONST
-from lupupy.lupusec import LupusecApi
+
+if TYPE_CHECKING:
+    from lupupy.api.lupusec_api import LupusecApi
 
 
 class LupusecDevice:
@@ -29,7 +33,7 @@ class LupusecDevice:
 
         return self._json_state.get(name)
 
-    def refresh(self, api: LupusecApi) -> dict:
+    def refresh(self, api: "LupusecApi") -> dict:
         """Refresh a device."""
         # new_device = {}
         if self.type in CONST.BINARY_SENSOR_TYPES:

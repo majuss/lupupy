@@ -4,7 +4,8 @@ import logging
 from pathlib import Path
 
 import lupupy.constants as CONST
-from lupupy.api.lupusec_api import LupusecApi, LupusecModelType
+from lupupy.api.data_models import LupusecAlarmMode, LupusecModelType
+from lupupy.api.lupusec_api import LupusecApi
 from lupupy.devices import LupusecDevice
 from lupupy.devices.alarm import LupusecAlarm
 from lupupy.devices.binary_sensor import LupusecBinarySensor
@@ -63,7 +64,7 @@ class Lupusec:
         device = self._devices.get(device_id)
 
         if device and refresh:
-            device.refresh()
+            device.refresh(self.api)
 
         return device
 
@@ -75,17 +76,18 @@ class Lupusec:
 
         return self.get_device(CONST.ALARM_DEVICE_ID, refresh)
 
-    def set_mode(self, mode: str) -> dict:
+    @property
+    def model(self) -> LupusecModelType:
+        """Model type of the connected panel."""
+        return self.api.model
+
+    def set_mode(self, mode: LupusecAlarmMode) -> dict:
         """Set the mode of the alarm."""
-        if self.model == LupusecModelType.XT1:
-            params = {
-                "mode": mode,
-            }
-        elif self.model == LupusecModelType.XT2_3_4:
-            params = {"mode": mode, "area": 1}
-        r = self._request_post("panelCondPost", params)
-        responseJson = self.clean_json(r.text)
-        return responseJson
+        return self.api.set_mode(mode)
+
+    def get_history(self) -> list:
+        """Get the event history of the panel."""
+        return self.api.get_history()
 
     def _newDevice(self, deviceJson: dict) -> None | LupusecDevice:
         """Create new device object for the given type."""
@@ -133,13 +135,13 @@ class Lupusec:
         if alarmDevice:
             alarmDevice.update(panelJson)
         else:
-            alarmDevice = LupusecAlarm(panelJson, self)
+            alarmDevice = LupusecAlarm(panelJson)
             self._devices["0"] = alarmDevice
 
     def _handle_power_switches(self) -> None:
         """Handle power switches based on the model type."""
         if self.api.model == LupusecModelType.XT1:
-            switches = self.get_power_switches()
+            switches = self.api.get_power_switches()
             _LOGGER.debug("Get active the power switches in get_devices: %s", switches)
 
             for deviceJson in switches:

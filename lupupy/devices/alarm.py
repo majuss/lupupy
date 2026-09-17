@@ -2,8 +2,13 @@
 
 import logging
 
-from lupupy.api.lupusec_api import LupusecAlarmMode, LupusecApi
+from typing import TYPE_CHECKING
+
+from lupupy.api.data_models import LupusecAlarmMode
 from lupupy.devices.switch import LupusecDevice, LupusecSwitch
+
+if TYPE_CHECKING:
+    from lupupy.api.lupusec_api import LupusecApi
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,7 +21,7 @@ class LupusecAlarm(LupusecSwitch):
         LupusecSwitch.__init__(self, json_obj)
         self._area = area
 
-    def set_mode(self, mode: LupusecAlarmMode, api: LupusecApi) -> bool:
+    def set_mode(self, mode: LupusecAlarmMode, api: "LupusecApi") -> bool:
         """Set Lupusec alarm mode."""
         _LOGGER.debug("State change called from alarm device")
         if not mode:
@@ -29,28 +34,28 @@ class LupusecAlarm(LupusecSwitch):
         _LOGGER.info("Mode set to: %s", mode)
         return True
 
-    def set_home(self, api: LupusecApi) -> bool:
+    def set_home(self, api: "LupusecApi") -> bool:
         """Arm Lupusec to home mode."""
         return self.set_mode(LupusecAlarmMode.Home, api)
 
-    def set_away(self, api: LupusecApi) -> bool:
+    def set_away(self, api: "LupusecApi") -> bool:
         """Arm Lupusec to armed mode."""
         return self.set_mode(LupusecAlarmMode.Armed, api)
 
-    def set_standby(self, api: LupusecApi) -> bool:
+    def set_standby(self, api: "LupusecApi") -> bool:
         """Arm Lupusec to stay mode."""
         return self.set_mode(LupusecAlarmMode.Disarmed, api)
 
-    def refresh(self, api: LupusecApi) -> bool:
+    def refresh(self, api: "LupusecApi") -> bool:
         """Refresh the alarm device."""
         response_object = LupusecDevice.refresh(self, api)
         return response_object
 
-    def switch_on(self, api: LupusecApi) -> bool:
+    def switch_on(self, api: "LupusecApi") -> bool:
         """Arm Abode to default mode."""
         return self.set_mode(LupusecAlarmMode.Armed, api)
 
-    def switch_off(self, api: LupusecApi) -> bool:
+    def switch_off(self, api: "LupusecApi") -> bool:
         """Arm Abode to home mode."""
         return self.set_standby(api)
 

@@ -10,10 +10,16 @@
 venv
 __pycache__
 test_*
+!tests/test_*.py
 *.egg-info/
 *.vscode/
 build/
 dist/
+
+# Credentials for manual testing. The example belongs in the repository,
+# the real file never does.
+.env
+!.env.example
 .venv/
 # Packages #
 ############

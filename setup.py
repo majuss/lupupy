@@ -13,7 +13,7 @@ setup(
     platforms="any",
     packages=PACKAGES,
     include_package_data=True,
-    python_requires=">=3.5",
+    python_requires=">=3.10",
     install_requires=["requests>=2.12.4", "pyyaml", "colorlog"],
     test_suite="tests",
     entry_points={"console_scripts": ["lupupy = lupupy.__main__:main"]},

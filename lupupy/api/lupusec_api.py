@@ -304,7 +304,7 @@ class LupusecApi:
         return response
 
     def _request_post(self, action: str, params: dict = {}) -> requests.Response:
-        if self.model == LupusecModelType.XT2_3_4.value:
+        if self.model == LupusecModelType.XT2_3_4:
             ts = time.time()
             if ts - self._token_ts > 60:
                 self._token_ts = ts
