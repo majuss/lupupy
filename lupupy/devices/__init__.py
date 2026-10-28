@@ -34,6 +34,13 @@ class LupusecDevice(object):
     def refresh(self):
         """Refresh a device"""
         # new_device = {}
+        if self.type == CONST.TYPE_SMOKE_XT:
+            for device in self._lupusec.get_sensors():
+                if device['device_id'] == self._device_id:
+                    self.update(device)
+                    return device
+            return None
+
         if self.type in CONST.BINARY_SENSOR_TYPES:
             response = self._lupusec.get_sensors()
             for device in response:
