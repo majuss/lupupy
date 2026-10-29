@@ -3,6 +3,7 @@ import json
 import logging
 
 import lupupy.constants as CONST
+from lupupy.battery import battery_low_value, has_battery_information
 
 class LupusecDevice(object):
     """Class to represent each Lupusec device."""
@@ -63,6 +64,15 @@ class LupusecDevice(object):
 
         Only updates if it already exists in the device.
         """
+        # Battery fields must update even when the previous value was empty/0,
+        # and disappear when absent from a new device row.
+        battery_keys = ("battery", "battery_ok", "faults", "_battery_state")
+        battery_fields = {
+            key: json_state[key] for key in battery_keys if key in json_state
+        }
+        for key in battery_keys:
+            self._json_state.pop(key, None)
+        self._json_state.update(battery_fields)
         if self._type in CONST.BINARY_SENSOR_TYPES:
             self._json_state['status'] = json_state['status']
         else:
@@ -82,7 +92,12 @@ class LupusecDevice(object):
     @property
     def battery_low(self):
         """Is battery level low."""
-        return int(self.get_value('faults').get('low_battery', '0')) == 1
+        return battery_low_value(self._json_state)
+
+    @property
+    def has_battery_information(self):
+        """Whether this device provides battery-related fields."""
+        return has_battery_information(self._json_state)
 
     @property
     def no_response(self):

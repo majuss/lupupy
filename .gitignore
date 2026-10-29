@@ -10,6 +10,7 @@
 venv
 __pycache__
 test_*
+!tests/test_battery.py
 *.egg-info/
 *.vscode/
 build/

@@ -6,12 +6,18 @@ import json
 import unicodedata
 import yaml
 from pathlib import Path
+from threading import RLock
 
 import lupupy.devices.alarm as ALARM
 import lupupy.constants as CONST
 from lupupy.devices.binary_sensor import LupusecBinarySensor
 from lupupy.devices.switch import LupusecSwitch
 from lupupy.exceptions import LupusecException
+from lupupy.battery import (
+    BatterySnapshot,
+    battery_state_from_snapshot,
+    has_battery_information,
+)
 
 _LOGGER = logging.getLogger(__name__)
 home = str(Path.home())
@@ -70,6 +76,8 @@ class Lupusec:
 
         self._panel = self.get_panel()
         self._cacheSensors = None
+        self._sensor_lock = RLock()
+        self._battery_snapshot_at = None
         self._cacheStampS = time.time()
         self._cachePss = None
         self._cacheStampP = time.time()
@@ -160,13 +168,34 @@ class Lupusec:
         return self._cachePss
 
     def get_sensors(self):
+        with self._sensor_lock:
+            return self._get_sensors()
+
+    def _get_sensors(self):
         stamp_now = time.time()
         if self._cacheSensors is None or stamp_now - self._cacheStampS > 2.0:
-            self._cacheStampS = stamp_now
             response = self._request_get(self.api_sensors)
-            response = self.clean_json(response.text)["senrows"]
+            response.raise_for_status()
+            payload = self.clean_json(response.text)
+            if not isinstance(payload, dict) or not isinstance(
+                payload.get("senrows"), list
+            ):
+                raise ValueError("invalid device snapshot")
+            response = payload["senrows"]
             sensors = []
             for device in response:
+                if (
+                    not isinstance(device, dict)
+                    or "cond" not in device
+                    or self.api_device_id not in device
+                    or (
+                        self.model != 1
+                        and "status" not in device
+                        and "openClose" not in device
+                    )
+                ):
+                    raise ValueError("invalid sensor row")
+                device["_battery_state"] = battery_state_from_snapshot(device)
                 if self.model == 1:
                     device["status"] = device["cond"]
                 else:
@@ -181,9 +210,24 @@ class Lupusec:
                 if device["status"] == "{WEB_MSG_DC_CLOSE}" or device["status"] == "0" or device["status"] == "":
                     device["status"] = "Geschlossen"
                 sensors.append(device)
+            self._cacheStampS = stamp_now
+            self._battery_snapshot_at = time.monotonic()
             self._cacheSensors = sensors
 
         return self._cacheSensors
+
+    def get_battery_snapshot(self):
+        """Reuse the sensor cache; only a successful network read sets freshness."""
+        with self._sensor_lock:
+            states = {}
+            for row in self.get_sensors():
+                if not has_battery_information(row):
+                    continue
+                sid = row.get("device_id")
+                if not isinstance(sid, str) or not sid or sid in states:
+                    raise ValueError("missing or ambiguous sensor identity")
+                states[sid] = row["_battery_state"]
+            return BatterySnapshot(self._battery_snapshot_at, states)
 
     def get_panel(
         self,
